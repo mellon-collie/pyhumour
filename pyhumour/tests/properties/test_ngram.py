@@ -7,7 +7,7 @@ import unittest
 from unittest import mock
 from nltk.corpus import words
 
-from pyhumour._properties.language_models import NgramHelper
+from _properties.language_models import NgramHelper
 import string
 
 class TestNgram(unittest.TestCase):

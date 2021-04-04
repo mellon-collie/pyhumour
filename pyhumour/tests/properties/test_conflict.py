@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from pyhumour._properties.conflict import Conflict
+from _properties.conflict import Conflict
 from collections import defaultdict
 
 
