@@ -8,7 +8,7 @@ from unittest import mock
 
 import keras
 import hmmlearn
-from _properties.language_models import HMMHelper
+from pyhumour._properties.language_models import HMMHelper
 
 
 class TestHMM(unittest.TestCase):

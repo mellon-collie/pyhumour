@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from _properties.adjective_absurdity import AdjectiveAbsurdity
+from pyhumour._properties.adjective_absurdity import AdjectiveAbsurdity
 from collections import defaultdict
 
 

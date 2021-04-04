@@ -8,7 +8,7 @@ from nltk.corpus import words, wordnet
 import numpy as np
 from nltk.tokenize import word_tokenize,sent_tokenize
 
-from _utilities.preprocess import preprocess_text
+from pyhumour._utilities.preprocess import preprocess_text
 import math
 nltk.download("words")
 nltk.download("wordnet")

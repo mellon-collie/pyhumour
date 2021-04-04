@@ -5,8 +5,7 @@
 
 import unittest
 from unittest import mock
-
-from _properties.compatibility import Compatibility
+from pyhumour._properties.compatibility import Compatibility
 
 
 class TestCompatibility(unittest.TestCase):
