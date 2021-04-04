@@ -45,7 +45,7 @@ class HMMHelper:
 		hmm_trained = hmm.GaussianHMM(n_components=3,n_iter=50, init_params="mcs")
 		sequences = self._tokenizer.texts_to_sequences(self._texts)
 		lengths = [len(i) for i in sequences]
-		while(0 in lengths):
+		while 0 in lengths:
 			sequence.remove(sequences[lengths.index(0)])
 			lengths.remove(0)
 		sequences = [np.array(i) for i in sequences]
@@ -67,11 +67,11 @@ class HMMHelper:
 		X = [i.reshape(i.shape[0], 1) for i in X]
 		values = []
 		for i in X:
-			if (i.shape[0] == 0):
+			if i.shape[0] == 0:
 				values.append(0)
 			else:
 				values.append(self._hmm_trained.score(i))
-		if (values):
+		if values:
 			return values[0]
 		else:
 			return 0.0
@@ -104,7 +104,7 @@ class NgramHelper:
 		return self._individual_sentences
 
 	def get_bigrams(self):
-		if(len(self._individual_sentences)!=len(self._texts)):
+		if len(self._individual_sentences) != len(self._texts):
 			self.get_vocab()
 		for i in range(len(self._individual_sentences)):
 			word_list = self._individual_sentences[i]
@@ -117,7 +117,7 @@ class NgramHelper:
 		return self._bigram
 
 	def get_trigrams(self):
-		if(len(self._individual_sentences)!=len(self._texts)):
+		if len(self._individual_sentences) != len(self._texts):
 			self.get_vocab()
 		for i in range(len(self._individual_sentences)):
 			word_list = self._individual_sentences[i]
@@ -135,7 +135,7 @@ class NgramHelper:
 			word_list = self._texts[i].split()
 			modified_word_list = []
 			for w in word_list:
-				if((w in self._golden_vocab) or (w in self._special_characters) or (len(wordnet.synsets(w)) > 0)):
+				if (w in self._golden_vocab) or (w in self._special_characters) or (len(wordnet.synsets(w)) > 0):
 					modified_word_list.append(w)
 					self._vocab.add(w)
 				else:
@@ -149,9 +149,9 @@ class NgramHelper:
 		return self._vocab
 
 	def get_ngram_score(self, text: str):
-		if(self._vocab==set()):
+		if self._vocab==set():
 			self.get_vocab()
-		if(self._trigram==None):
+		if self._trigram is None:
 			self.get_trigrams()
 		text = preprocess_text(text)
 		sentences = sent_tokenize(text)

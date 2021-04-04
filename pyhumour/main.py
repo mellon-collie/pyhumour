@@ -3,8 +3,8 @@ from _properties.adjective_absurdity import AdjectiveAbsurdity
 from _properties.conflict import Conflict
 from _utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFrequencyMatrix
 from _utilities.preprocess import preprocess_text, preprocess_texts, pos_tag, pos_tag_texts
-from pyhumour._properties.language_models import HMMHelper, NgramHelper
-from pyhumour._utilities.preprocess import preprocess_texts
+from _properties.language_models import HMMHelper, NgramHelper
+from _utilities.preprocess import preprocess_texts
 
 
 class PyHumour:
@@ -85,14 +85,14 @@ class PyHumour:
         pass
 
     def hmm_probability(self, text: str) -> float:
-        if (self.hmm_trained == None):
+        if self.hmm_trained is None:
             # throw error
             raise Exception("Error: Call the fit() method first")
         score = self.hmm_trained.get_hmm_score(text)
         return score
 
     def ngram_probability(self, text: str) -> float:
-        if (self.ngram_trained == None):
+        if self.ngram_trained is None:
             raise Exception("Error: Call the fit() method first")
         score = self.ngram_trained.get_ngram_score(text)
         return score
