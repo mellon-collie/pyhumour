@@ -18,12 +18,23 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-        "numpy ~= 1.17"
+        "pandas>=0.23.4",
+        "scipy>=1.4.1",
+        "numpy>=1.13.0",
+        "wordfreq>=2.2.2",
+        "hmmlearn>=0.2.3",
+        "nltk>=3.3",
+        "Tensorflow >= 2.2",
+        "Keras>=2.3.1",
+
     ],
     extras_require = {
         "dev": [
             "pytest>=5.4",
-            "twine>=3.1"
+            "twine>=3.1",
+            "nose>=1.3.7",
+            "nose-timer>=1.0.1"
+
         ]
     },
     url="https://github.com/mellon-collie/pyhumour",
