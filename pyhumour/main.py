@@ -15,8 +15,8 @@ class PyHumour:
     def __init__(self, humour_corpus: list, non_humour_corpus: list):
         self.humour_corpus = humour_corpus
         self.non_humour_corpus = non_humour_corpus
-        self.hmm_trained = None
-        self.ngram_trained = None
+        self._hmm_trained = None
+        self._ngram_trained = None
 
 
         # Initialize private variables
@@ -32,8 +32,8 @@ class PyHumour:
         self.humour_corpus = preprocess_texts(self.humour_corpus)
         self.non_humour_corpus = preprocess_texts(self.non_humour_corpus)
 
-        self.hmm_trained = HMMHelper(self.humour_corpus + self.non_humour_corpus)
-        self.ngram_trained = NgramHelper(self.humour_corpus)
+        self._hmm_trained = HMMHelper(self.humour_corpus + self.non_humour_corpus)
+        self._ngram_trained = NgramHelper(self.humour_corpus)
 
         self._pos_tagged_humorous_corpus = pos_tag_texts(self.humour_corpus)
         self._pos_tagged_non_humorous_corpus = pos_tag_texts(self.non_humour_corpus)
@@ -61,18 +61,27 @@ class PyHumour:
         pass
 
     def humorous_conflict(self, text: str) -> float:
+        if self._humorous_conflict_calculator is None:
+            raise Exception("Error: Call the fit() method first")
+
         preprocessed_text = preprocess_text(text)
         pos_tagged_text = pos_tag(word_tokenize(preprocessed_text))
 
         return self._humorous_conflict_calculator.calculate(pos_tags=pos_tagged_text)
 
     def non_humorous_conflict(self, text: str) -> float:
+        if self._non_humorous_conflict_calculator is None:
+            raise Exception("Error: Call the fit() method first")
+
         preprocessed_text = preprocess_text(text)
         pos_tagged_text = pos_tag(word_tokenize(preprocessed_text))
 
         return self._non_humorous_conflict_calculator.calculate(pos_tags=pos_tagged_text)
 
     def adjective_absurdity(self, text: str) -> float:
+        if self._adjective_absurdity_calculator is None:
+            raise Exception("Error: Call the fit() method first")
+
         preprocessed_text = preprocess_text(text)
         pos_tagged_text = pos_tag(word_tokenize(preprocessed_text))
 
@@ -85,14 +94,14 @@ class PyHumour:
         pass
 
     def hmm_probability(self, text: str) -> float:
-        if self.hmm_trained is None:
+        if self._hmm_trained is None:
             # throw error
             raise Exception("Error: Call the fit() method first")
-        score = self.hmm_trained.get_hmm_score(text)
+        score = self._hmm_trained.get_hmm_score(text)
         return score
 
     def ngram_probability(self, text: str) -> float:
-        if self.ngram_trained is None:
+        if self._ngram_trained is None:
             raise Exception("Error: Call the fit() method first")
-        score = self.ngram_trained.get_ngram_score(text)
+        score = self._ngram_trained.get_ngram_score(text)
         return score
