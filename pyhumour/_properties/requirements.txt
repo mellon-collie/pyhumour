@@ -5,3 +5,4 @@ hmmlearn==0.2.3
 nltk==3.3
 numpy==1.13.0
 wordfreq==2.2.2
+requests==2.25.1

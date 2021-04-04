@@ -1,5 +1,9 @@
 # pyhumour
 
+This is a module for the characterization and quantification of concise humour using 9 distinct computational features.
+These features were inspired by [Ritchie's Incongruity-Resolution Theory](https://era.ed.ac.uk/handle/1842/3397), and are formulated as follows:
+
+
 ## Installation
 
 Run the following to install:
@@ -50,9 +54,9 @@ pip install tox
 ```python
 tox
 ```
-# Unit tests developed with unittest
+## Unit tests developed with unittest
 
-## Running Unit Tests
+### Running Unit Tests
 Use the following command inside of git root directory to run the unit tests:
 ```python
 nosetests -w ./ --with-coverage --cover-html --cover-package=./ --cover-erase --with-timer --timer-top-n 10

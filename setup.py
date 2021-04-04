@@ -1,7 +1,36 @@
 from setuptools import setup
+from setuptools.command.develop import develop
+from setuptools.command.egg_info import egg_info
+from setuptools.command.install import install
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
+
+
+def custom_command():
+    import nltk
+    nltk.download("words")
+    nltk.download('wordnet')
+
+
+class Develop(develop):
+    def run(self):
+        develop.run(self)
+        custom_command()
+
+
+class EggInfo(egg_info):
+    def run(self):
+        egg_info.run(self)
+        custom_command()
+
+
+class Install(install):
+    def run(self):
+        install.do_egg_install(self)  # to ensure packages in `install_requires` is installed
+        install.run(self)
+        custom_command()
+
 
 setup(
     name='pyhumour',
@@ -17,6 +46,9 @@ setup(
     ],
     long_description=long_description,
     long_description_content_type="text/markdown",
+    cmdclass={'install': Install,
+              'develop': Develop,
+              'egg_info': EggInfo},
     install_requires=[
         "pandas>=0.23.4",
         "scipy>=1.4.1",
@@ -26,17 +58,17 @@ setup(
         "nltk>=3.3",
         "Tensorflow >= 2.2",
         "Keras>=2.3.1",
-
     ],
-    extras_require = {
+    extras_require={
         "dev": [
             "pytest>=5.4",
             "twine>=3.1",
             "nose>=1.3.7",
-            "nose-timer>=1.0.1"
-
+            "nose-timer>=1.0.1",
+            "coverage>=5.5"
         ]
     },
+    setup_requires=['nltk'],
     url="https://github.com/mellon-collie/pyhumour",
     author='Unscholars',
     author_email='prjctstuff@gmail.com',

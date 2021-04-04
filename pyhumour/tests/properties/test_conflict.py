@@ -34,7 +34,3 @@ class ConflictTests(TestCase):
                     ('generous', 'JJ'), ('woman', 'NN'), ('is', 'VBZ'),
                     ('quite', 'RB'), ('a', 'DT'), ('peculiar', 'JJ'), ('sight', 'NN')]
         self.assertEqual(self.conflict_calculator.calculate(pos_tags), 27.5)
-
-
-if __name__ == '__main__':
-    main()

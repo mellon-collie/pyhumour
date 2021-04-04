@@ -5,6 +5,7 @@
 
 import unittest
 from unittest import mock
+
 from pyhumour._properties.compatibility import Compatibility
 
 
@@ -19,7 +20,3 @@ class TestCompatibility(unittest.TestCase):
                 return_value=['sample', 'text']):
             result = compatibility.calculate(text=text)
         self.assertEqual(result, 4.0)
-
-
-if __name__ == '__main__':
-    unittest.main()

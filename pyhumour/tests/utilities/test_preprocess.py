@@ -9,7 +9,7 @@ from unittest import mock
 from pyhumour._utilities.preprocess import preprocess_text, preprocess_texts
 
 
-class TestCompatibility(unittest.TestCase):
+class TestPreprocess(unittest.TestCase):
 
     def test_preprocess(self):
         result = preprocess_text("hello world! How's this as a sample sentence.")
@@ -21,6 +21,3 @@ class TestCompatibility(unittest.TestCase):
 
     def test_preprocessTextsInstance(self):
         self.assertIsInstance(type(preprocess_texts(["hello","world"])),type(list))
-
-if __name__ == '__main__':
-    unittest.main()

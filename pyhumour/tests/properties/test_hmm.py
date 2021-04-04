@@ -25,8 +25,3 @@ class TestHMM(unittest.TestCase):
 
     def test_hmmObject(self):
         self.assertIsInstance(type(self._hmm.get_hmm()),type(hmmlearn.hmm.GaussianHMM))
-
-
-
-if __name__ == '__main__':
-    unittest.main()
