@@ -5,7 +5,9 @@ pos_tag_dict = {'Adjective': ('JJ', 'JJR', 'JJS'), 'Noun': ('NN', 'NNS', 'NNP', 
 
 
 class POSTagBigramFrequencyMatrix:
-
+    """
+    Helps in constructing the POS tag bigram frequency matrix used in computing Conflict, Adjective Absurdity
+    """
     def _construct_matrix(self, pos_tagged_corpus_list, first_pos_tag, second_pos_tag):
         for pos_tagged_sent in pos_tagged_corpus_list:
             for i in range(len(pos_tagged_sent) - 1):

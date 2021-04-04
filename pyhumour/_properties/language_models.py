@@ -15,18 +15,33 @@ nltk.download("wordnet")
 
 
 class HMMHelper:
+	"""
+	HMMHelper class is used for creating the Hidden Markov Model for the corpus given. It also calculates the
+	score of any new text sent by the user
+	"""
 	def __init__(self, texts: list):
+		"""
+		self._texts -> the corpus or the dataset given by the user.
+		self._tokenizer -> keras tokenizer based on the corpus
+		self._hmm_trained -> trained hmm model
+		"""
 		self._texts = texts
 		self._tokenizer = self.get_tokenizer(200000)
 		self._hmm_trained = self.get_hmm()
 
 
 	def get_tokenizer(self,max_features:int):
+		"""
+		Training the tokenizer with keras tokenizer method
+		"""
 		tokenizer = Tokenizer(num_words=max_features, oov_token=True)
 		tokenizer.fit_on_texts(self._texts)
 		return tokenizer
 
 	def get_hmm(self):
+		"""
+		Training the HMM model
+		"""
 		hmm_trained = hmm.GaussianHMM(n_components=3,n_iter=50, init_params="mcs")
 		sequences = self._tokenizer.texts_to_sequences(self._texts)
 		lengths = [len(i) for i in sequences]
@@ -40,6 +55,9 @@ class HMMHelper:
 		return hmm_trained
 
 	def get_hmm_score(self,text):
+		"""
+		Returns the Log probability HMM score for text sent by user.
+		"""
 		text = preprocess_text(text)
 		sentence = word_tokenize(text)
 		text = ' '.join(sentence)
