@@ -8,13 +8,14 @@ from wordfreq import word_frequency
 class Inappropriateness:
     """Calculates the 'Inappropriateness' value of a given text."""
 
-    def calculate(self, text: str) -> float:
+    @staticmethod
+    def calculate(text: str) -> float:
         """
         Return the 'Inappropriateness' value of a given text.
 
         :param str text: Text for which Inappropriateness is calculated
         """
-        df_erotica = pd.read_table('../resources/ero-1gram-nostop-regexed.txt',
+        df_erotica = pd.read_table('pyhumour/resources/ero-1gram-nostop-regexed.txt',
                                    delim_whitespace=True,
                                    names=('word', 'count'))
         total_count_erotica = df_erotica['count'].sum()

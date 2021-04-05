@@ -7,7 +7,8 @@ from wordfreq import word_frequency
 class Obviousness:
     """Calculates the 'Obviousness' value of a given text."""
 
-    def calculate(self, text: str) -> float:
+    @staticmethod
+    def calculate(text: str) -> float:
         """Return the 'Obviousness' value of a given text."""
         tokens = word_tokenize(text)
         tokens_average = 0.0

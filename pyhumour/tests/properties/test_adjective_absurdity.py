@@ -53,7 +53,3 @@ class AdjectiveAbsurdityTests(TestCase):
                     ('generous', 'JJ'), ('woman', 'NN'), ('is', 'VBZ'),
                     ('quite', 'RB'), ('a', 'DT'), ('peculiar', 'JJ'), ('sight', 'NN')]
         self.assertEqual(self.adjective_absurdity_calculator.calculate(pos_tags), 1.0)
-
-
-if __name__ == '__main__':
-    main()
