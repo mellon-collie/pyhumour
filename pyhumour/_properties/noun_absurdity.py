@@ -17,7 +17,6 @@ class NounAbsurdity:
         if not isinstance(frequency_matrix, POSTagBigramFrequencyMatrix):
             raise TypeError('The given matrix is not an instance of POSTagBigramFrequencyMatrix')
         self.adj_noun_dict = frequency_matrix
-        self.adj_noun_mapping = frequency_matrix.get_all_row_keys()
 
     def calculate(self, pos_tags: list) -> float:
         """Return the 'Humourous Noun Absurdity' value of a given text.
@@ -54,12 +53,12 @@ class NounAbsurdity:
                     adj = adj.lower()
                     noun = re.sub('[^A-Za-z]*', '', pos_tags[j+1][0])
                     noun = noun.lower()
-                    for k in self.adj_noun_mapping[adj]:
+                    for k in self.adj_noun_dict.get_row(adj):
                         tup = (adj, k)
                         try:
-                            noun_absurdity_positive += self.adj_noun_dict[tup]*distance.cosine(
+                            noun_absurdity_positive += self.adj_noun_dict.cell_value(adj, k)*distance.cosine(
                                 embeddings_index[noun], embeddings_index[k])
-                            noun_absurdity_count += self.adj_noun_dict[tup]
+                            noun_absurdity_count += self.adj_noun_dict.cell_value(adj, k)
                         except Exception:
                             noun_absurdity_positive += 0
                             noun_absurdity_count += 0
