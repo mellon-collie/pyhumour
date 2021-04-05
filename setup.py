@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 from setuptools.command.develop import develop
 from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
@@ -37,13 +37,15 @@ setup(
     version='0.0.1',
     description='A module for the characterization and quantification of concise humour',
     py_modules=["pyhumour"],  # list of files that can be imported
-    package_dir={'': 'pyhumour'},
+    # package_dir={'': 'pyhumour'},
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent"
     ],
+    packages=find_packages(exclude=("tests",)),
+    include_package_data=True,
     long_description=long_description,
     long_description_content_type="text/markdown",
     cmdclass={'install': Install,

@@ -4,7 +4,7 @@ import numpy as np
 import re
 from scipy.spatial import distance
 
-from _utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFrequencyMatrix
+from pyhumour._utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFrequencyMatrix
 
 
 class NounAbsurdity:

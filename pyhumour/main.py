@@ -1,14 +1,14 @@
 from nltk.tokenize import word_tokenize
-from _properties.adjective_absurdity import AdjectiveAbsurdity
-from _properties.compatibility import Compatibility
-from _properties.conflict import Conflict
-from _properties.inappropriateness import Inappropriateness
-from _properties.language_models import HMMHelper, NgramHelper
-from _properties.noun_absurdity import NounAbsurdity
-from _properties.obviousness import Obviousness
-from _utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFrequencyMatrix
-from _utilities.preprocess import preprocess_text, preprocess_texts, pos_tag, pos_tag_texts
-from _utilities.preprocess import preprocess_texts
+from pyhumour._properties.adjective_absurdity import AdjectiveAbsurdity
+from pyhumour._properties.compatibility import Compatibility
+from pyhumour._properties.conflict import Conflict
+from pyhumour._properties.inappropriateness import Inappropriateness
+from pyhumour._properties.language_models import HMMHelper, NgramHelper
+from pyhumour._properties.noun_absurdity import NounAbsurdity
+from pyhumour._properties.obviousness import Obviousness
+from pyhumour._utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFrequencyMatrix
+from pyhumour._utilities.preprocess import preprocess_text, preprocess_texts, pos_tag, pos_tag_texts
+from pyhumour._utilities.preprocess import preprocess_texts
 
 
 class PyHumour:
