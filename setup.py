@@ -70,6 +70,6 @@ setup(
     },
     setup_requires=['nltk'],
     url="https://github.com/mellon-collie/pyhumour",
-    author='Unscholars',
-    author_email='prjctstuff@gmail.com',
+    author='The PyHumour Development Team',
+    author_email='pyhumour-devs@googlegroups.com',
 )
