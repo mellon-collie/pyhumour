@@ -27,25 +27,30 @@ class EggInfo(egg_info):
 
 class Install(install):
     def run(self):
-        install.do_egg_install(self)  # to ensure packages in `install_requires` is installed
+        # install.do_egg_install(self)  # to ensure packages in `install_requires` is installed
         install.run(self)
         custom_command()
 
 
 setup(
     name='pyhumour',
-    version='0.0.1',
+    version='0.0.8',
     description='A module for the characterization and quantification of concise humour',
+    license='BSD-3-Clause',
+    packages=find_packages('pyhumour'),
+    package_dir={'': 'pyhumour'},
+    # py_modules=[splitext(basename(path))[0] for path in glob('pyhumour/*.py')],
     py_modules=["pyhumour"],  # list of files that can be imported
-    # package_dir={'': 'pyhumour'},
+    package_data={'pyhumour': ['resources/*.json', 'resources/*.txt']},
     classifiers=[
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent"
     ],
-    packages=find_packages(exclude=("tests",)),
     include_package_data=True,
+    zip_safe=False,
     long_description=long_description,
     long_description_content_type="text/markdown",
     cmdclass={'install': Install,
