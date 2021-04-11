@@ -34,14 +34,10 @@ class Install(install):
 
 setup(
     name='pyhumour',
-    version='0.1.0',
+    version='0.1.4',
     description='A module for the characterization and quantification of concise humour',
     license='BSD-3-Clause',
-    # package_dir={'': 'pyhumour'},
     packages=find_packages(),
-    # py_modules=[splitext(basename(path))[0] for path in glob('pyhumour/*.py')],
-    # py_modules=["pyhumour/*"],  # list of files that can be imported
-    # package_data={'pyhumour': ['resources/*.json', 'resources/*.txt']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",

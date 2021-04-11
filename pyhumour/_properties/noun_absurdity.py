@@ -2,6 +2,8 @@
 
 import numpy as np
 import re
+import os
+import sys
 from scipy.spatial import distance
 
 from pyhumour._utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFrequencyMatrix
@@ -24,7 +26,8 @@ class NounAbsurdity:
         :param list pos_tags: List of pos_tags for the given text.
         """
         embeddings_index = {}
-        target_path = 'pyhumour/resources/numberbatch-en.txt'
+        resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
+        target_path = os.path.join(resources_path, 'numberbatch-en.txt')
         try:
             f = open(target_path, encoding='utf-8')
         except FileNotFoundError:

@@ -4,11 +4,13 @@ from nltk import (
     tokenize,
     pos_tag
 )
-
+import os
+import sys
 
 def preprocess_text(text):
     text = text.lower()
-    contraction_map = json.load(open("pyhumour/resources/contraction_map.json"))
+    resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
+    contraction_map = json.load(open(os.path.join(resources_path, "contraction_map.json")))
     change_characters = {'‚': ',', '\ufeff': ' ', '„': '"', "—": '-', '™': ' ', '″': '"', 'ƒ': 'f', '�': ' ',
                          '′': "'", '‘': "'",
                          '…': '...', '’': "'", '‑': '-', '\u2028': ' ', 'π': 'π', 'Ł': ' ', '⚪': ' ', '–': '-',

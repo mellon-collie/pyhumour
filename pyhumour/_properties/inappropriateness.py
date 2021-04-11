@@ -1,5 +1,7 @@
 """Implementation of the Inappropriateness property."""
 
+import os
+import sys
 from nltk.tokenize import word_tokenize
 import pandas as pd
 from wordfreq import word_frequency
@@ -15,7 +17,8 @@ class Inappropriateness:
 
         :param str text: Text for which Inappropriateness is calculated
         """
-        df_erotica = pd.read_table('pyhumour/resources/ero-1gram-nostop-regexed.txt',
+        resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
+        df_erotica = pd.read_table(os.path.join(resources_path, "ero-1gram-nostop-regexed.txt"),
                                    delim_whitespace=True,
                                    names=('word', 'count'))
         total_count_erotica = df_erotica['count'].sum()
