@@ -68,8 +68,7 @@ that need to be additionally covered in the unit tests.
 
 ## TODO
 
-0. Use [cookiecutter](https://github.com/cookiecutter/cookiecutter) 
-1. Manifest
+1. Use [cookiecutter](https://github.com/cookiecutter/cookiecutter) 
 2. travis.yml
 3. Badges
     - Code Coverage (Coveralls, codecov.io)

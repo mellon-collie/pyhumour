@@ -9,6 +9,7 @@ with open("README.md", "r") as fh:
 
 def custom_command():
     import nltk
+    nltk.download('averaged_perceptron_tagger')
     nltk.download("words")
     nltk.download('wordnet')
 

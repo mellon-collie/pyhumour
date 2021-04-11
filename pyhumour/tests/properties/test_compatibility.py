@@ -10,13 +10,12 @@ from pyhumour._properties.compatibility import Compatibility
 
 
 class TestCompatibility(unittest.TestCase):
-
     def test_calculate(self):
         text = "sample text"
         compatibility = Compatibility()
         with \
             mock.patch(
-                '_properties.compatibility.word_tokenize',
+                'pyhumour._properties.compatibility.word_tokenize',
                 return_value=['sample', 'text']):
             result = compatibility.calculate(text=text)
         self.assertEqual(result, 4.0)

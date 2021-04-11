@@ -10,13 +10,12 @@ from pyhumour._properties.obviousness import Obviousness
 
 
 class TestInappropriateness(unittest.TestCase):
-
     def test_calculate(self):
         text = "sample text"
         obviousness = Obviousness()
         with \
             mock.patch(
-                '_properties.inappropriateness.word_tokenize',
+                'pyhumour._properties.inappropriateness.word_tokenize',
                 return_value=['sample', 'text']):
             result = obviousness.calculate(text=text)
         self.assertEqual(result, 7.08e-05)
