@@ -1,7 +1,26 @@
 # pyhumour
 
-This is a module for the characterization and quantification of concise humour using 9 distinct computational features.
+This is a module for the characterization and quantification of concise humour using 10 distinct computational features.
 These features were inspired by [Ritchie's Incongruity-Resolution Theory](https://era.ed.ac.uk/handle/1842/3397), and are formulated as follows:
+1. Obviousness (`obviousness`)
+2. Compatibility (`compatibility`)
+3. Inappropriateness (`inappropriateness`)
+4. Humorous Conflict (`humorous_conflict`)
+5. Non-humorous Conflict (`non_humorous_conflict`)
+6. Adjective Absurdity (`adjective_absurdity`)
+7. Humorous Noun Absurdity (`humorous_noun_absurdity`)
+8. Non-humorous Noun Absurdity (`non_humorous_noun_absurdity`)
+9. HMM Probability (`hmm_probability`)
+10. N-Gram Probability (`ngram_probability`)
+
+
+## Example
+```python
+import pyhumour
+a = pyhumour.PyHumour([<humorous_corpus>], [<non_humorous_corpus>])
+a.fit()
+a.obviousness('this is an obvious statement')
+```
 
 
 ## Installation
@@ -44,6 +63,12 @@ pip install twine
 twine upload dist/*
 ```
 
+### Pushing to testpypi
+
+```python
+twine upload --repository testpypi dist/*
+```
+
 
 ## Testing in different distributions of python
 
@@ -64,14 +89,3 @@ nosetests -w ./ --with-coverage --cover-html --cover-package=./ --cover-erase --
 A folder called `cover` will be created in `src` post running the
 command. You can open `cover/index.html` to view the lines (if any)
 that need to be additionally covered in the unit tests.
-
-
-## TODO
-
-1. Use [cookiecutter](https://github.com/cookiecutter/cookiecutter) 
-2. travis.yml
-3. Badges
-    - Code Coverage (Coveralls, codecov.io)
-    - Quality Metrics (Code Climate, Landscape.io)
-4. bumpversion - to manage versioning
-5. Test on OSX & Windows

@@ -61,6 +61,7 @@ setup(
         "nltk>=3.3",
         "tensorflow>=2.2",
         "keras>=2.3.1",
+        "requests>=2.25.1"
     ],
     extras_require={
         "dev": [
