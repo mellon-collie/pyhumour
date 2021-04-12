@@ -9,6 +9,7 @@ with open("README.md", "r") as fh:
 
 def custom_command():
     import nltk
+    nltk.download('averaged_perceptron_tagger')
     nltk.download("words")
     nltk.download('wordnet')
 
@@ -60,6 +61,7 @@ setup(
         "nltk>=3.3",
         "tensorflow>=2.2",
         "keras>=2.3.1",
+        "requests>=2.25.1"
     ],
     extras_require={
         "dev": [
