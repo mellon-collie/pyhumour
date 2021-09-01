@@ -7,8 +7,7 @@ from pyhumour._properties.language_models import HMMHelper, NgramHelper
 from pyhumour._properties.noun_absurdity import NounAbsurdity
 from pyhumour._properties.obviousness import Obviousness
 from pyhumour._utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFrequencyMatrix
-from pyhumour._utilities.preprocess import preprocess_text, preprocess_texts, pos_tag, pos_tag_texts
-from pyhumour._utilities.preprocess import preprocess_texts
+from pyhumour._utilities.preprocess import preprocess_text, preprocess_texts_in_chunks, pos_tag_texts
 import os
 import json
 import sys
@@ -48,8 +47,8 @@ class PyHumour:
 
         resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
         self._preprocess_contraction_map = json.load(open(os.path.join(resources_path, "contraction_map.json")))
-        self.humour_corpus = preprocess_texts(self.humour_corpus, self._preprocess_contraction_map)
-        self.non_humour_corpus = preprocess_texts(self.non_humour_corpus, self._preprocess_contraction_map)
+        self.humour_corpus, self._pos_tagged_humorous_corpus  = preprocess_texts_in_chunks(self.humour_corpus, self._preprocess_contraction_map)
+        self.non_humour_corpus, self._pos_tagged_non_humorous_corpus = preprocess_texts_in_chunks(self.non_humour_corpus, self._preprocess_contraction_map)
         self._obviousness = Obviousness()
         self._compatibility = Compatibility()
         self._inappropriateness = Inappropriateness()
