@@ -7,10 +7,15 @@ from nltk import (
 import os
 import sys
 
+
 def preprocess_text(text):
-    text = text.lower()
     resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
     contraction_map = json.load(open(os.path.join(resources_path, "contraction_map.json")))
+    preprocess_text(text, contraction_map)
+
+
+def preprocess_text(text, contraction_map):
+    text = text.lower()
     change_characters = {'‚': ',', '\ufeff': ' ', '„': '"', "—": '-', '™': ' ', '″': '"', 'ƒ': 'f', '�': ' ',
                          '′': "'", '‘': "'",
                          '…': '...', '’': "'", '‑': '-', '\u2028': ' ', 'π': 'π', 'Ł': ' ', '⚪': ' ', '–': '-',
@@ -37,8 +42,11 @@ def preprocess_text(text):
 
 def preprocess_texts(text_list: list) -> list:
     preprocess_texts_list = []
+    resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
+    contraction_map = json.load(open(os.path.join(resources_path, "contraction_map.json")))
+
     for text in text_list:
-        preprocess_texts_list.append(preprocess_text(text))
+        preprocess_texts_list.append(preprocess_text(text, contraction_map))
 
     return preprocess_texts_list
 
