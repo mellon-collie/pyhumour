@@ -40,10 +40,8 @@ def preprocess_text(text, contraction_map):
     return text
 
 
-def preprocess_texts(text_list: list) -> list:
+def preprocess_texts(text_list: list, contraction_map) -> list:
     preprocess_texts_list = []
-    resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
-    contraction_map = json.load(open(os.path.join(resources_path, "contraction_map.json")))
 
     for text in text_list:
         preprocess_texts_list.append(preprocess_text(text, contraction_map))

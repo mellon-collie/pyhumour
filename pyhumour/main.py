@@ -9,6 +9,9 @@ from pyhumour._properties.obviousness import Obviousness
 from pyhumour._utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFrequencyMatrix
 from pyhumour._utilities.preprocess import preprocess_text, preprocess_texts, pos_tag, pos_tag_texts
 from pyhumour._utilities.preprocess import preprocess_texts
+import os
+import json
+import sys
 
 
 class PyHumour:
@@ -22,6 +25,7 @@ class PyHumour:
         self.non_humour_corpus = non_humour_corpus
 
         # Initialize private variables
+        self._preprocess_contraction_map = None
         self._obviousness = None
         self._compatibility = None
         self._inappropriateness = None
@@ -42,6 +46,10 @@ class PyHumour:
         self.humour_corpus = preprocess_texts(self.humour_corpus)
         self.non_humour_corpus = preprocess_texts(self.non_humour_corpus)
 
+        resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
+        self._preprocess_contraction_map = json.load(open(os.path.join(resources_path, "contraction_map.json")))
+        self.humour_corpus = preprocess_texts(self.humour_corpus, self._preprocess_contraction_map)
+        self.non_humour_corpus = preprocess_texts(self.non_humour_corpus, self._preprocess_contraction_map)
         self._obviousness = Obviousness()
         self._compatibility = Compatibility()
         self._inappropriateness = Inappropriateness()
@@ -84,7 +92,7 @@ class PyHumour:
         if self._humorous_conflict_calculator is None:
             raise Exception("Error: Call the fit() method first")
 
-        preprocessed_text = preprocess_text(text)
+        preprocessed_text = preprocess_text(text, self._preprocess_contraction_map)
         pos_tagged_text = pos_tag(word_tokenize(preprocessed_text))
 
         return self._humorous_conflict_calculator.calculate(pos_tags=pos_tagged_text)
@@ -93,7 +101,7 @@ class PyHumour:
         if self._non_humorous_conflict_calculator is None:
             raise Exception("Error: Call the fit() method first")
 
-        preprocessed_text = preprocess_text(text)
+        preprocessed_text = preprocess_text(text, self._preprocess_contraction_map)
         pos_tagged_text = pos_tag(word_tokenize(preprocessed_text))
 
         return self._non_humorous_conflict_calculator.calculate(pos_tags=pos_tagged_text)
@@ -102,7 +110,7 @@ class PyHumour:
         if self._adjective_absurdity_calculator is None:
             raise Exception("Error: Call the fit() method first")
 
-        preprocessed_text = preprocess_text(text)
+        preprocessed_text = preprocess_text(text, self._preprocess_contraction_map)
         pos_tagged_text = pos_tag(word_tokenize(preprocessed_text))
 
         return self._adjective_absurdity_calculator.calculate(pos_tags=pos_tagged_text)
@@ -111,7 +119,7 @@ class PyHumour:
         if self._humorous_noun_absurdity_calculator is None:
             raise Exception("Error: Call the fit() method first")
 
-        preprocessed_text = preprocess_text(text)
+        preprocessed_text = preprocess_text(text, self._preprocess_contraction_map)
         pos_tagged_text = pos_tag(word_tokenize(preprocessed_text))
 
         return self._humorous_noun_absurdity_calculator.calculate(pos_tags=pos_tagged_text)
@@ -120,7 +128,7 @@ class PyHumour:
         if self._non_humorous_noun_absurdity_calculator is None:
             raise Exception("Error: Call the fit() method first")
 
-        preprocessed_text = preprocess_text(text)
+        preprocessed_text = preprocess_text(text, self._preprocess_contraction_map)
         pos_tagged_text = pos_tag(word_tokenize(preprocessed_text))
 
         return self._non_humorous_noun_absurdity_calculator.calculate(pos_tags=pos_tagged_text)
