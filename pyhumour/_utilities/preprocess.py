@@ -43,11 +43,13 @@ def preprocess_texts_in_chunks(text_list: list, contraction_map) -> tuple:
     if number_worker_processes > 1:
         futures_list = []
         text_chunks = [text_list[x: x + 50000] for x in range(0, len(text_list), 50000)]
-        with futures.ProcessPoolExecutor(max_workers=number_worker_processes) as executor:
+        with futures.ProcessPoolExecutor() as executor:
             for chunk in text_chunks:
                 futures_list.append(executor.submit(preprocess_texts, chunk, contraction_map))
-
-        chunks_result = [future.result() for future in futures_list]
+        chunks_result = []
+        for future in futures_list:
+            result = future.result()
+            chunks_result.append(result)
         preprocess_texts_list = list(itertools.chain(*chunks_result))
     else:
         preprocess_texts_list = preprocess_texts(text_list, contraction_map)
@@ -56,10 +58,8 @@ def preprocess_texts_in_chunks(text_list: list, contraction_map) -> tuple:
     pos_tagged_texts = []
 
     for index, item in enumerate(preprocess_texts_list):
-        if index % 2 == 0:
-            pure_preprocessed_texts.append(item)
-        else:
-            pos_tagged_texts.append(item)
+        pure_preprocessed_texts.append(item[0])
+        pos_tagged_texts.append(item[1])
 
     return pure_preprocessed_texts, pos_tagged_texts
 
@@ -67,8 +67,16 @@ def preprocess_texts_in_chunks(text_list: list, contraction_map) -> tuple:
 def preprocess_texts(text_list: list, contraction_map) -> list:
     preprocess_texts_list = []
     for text in text_list:
-        preprocessed_text = preprocess_text(text, contraction_map)
-        pos_tagged_text = pos_tag(tokenize.word_tokenize(preprocessed_text))
+        preprocessed_text = ""
+        pos_tagged_text = []
+        try:
+            preprocessed_text = preprocess_text(text, contraction_map)
+        except Exception as e:
+            preprocessed_text = text
+        try:
+            pos_tagged_text = pos_tag(tokenize.word_tokenize(preprocessed_text))
+        except Exception as e:
+            pos_tagged_text = []
         preprocess_texts_list.append((preprocessed_text, pos_tagged_text))
     return preprocess_texts_list
 

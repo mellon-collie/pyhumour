@@ -42,21 +42,24 @@ class PyHumour:
         self._non_humorous_noun_absurdity_calculator = None
 
     def fit(self) -> None:
-        self.humour_corpus = preprocess_texts(self.humour_corpus)
-        self.non_humour_corpus = preprocess_texts(self.non_humour_corpus)
-
         resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
         self._preprocess_contraction_map = json.load(open(os.path.join(resources_path, "contraction_map.json")))
-        self.humour_corpus, self._pos_tagged_humorous_corpus  = preprocess_texts_in_chunks(self.humour_corpus, self._preprocess_contraction_map)
-        self.non_humour_corpus, self._pos_tagged_non_humorous_corpus = preprocess_texts_in_chunks(self.non_humour_corpus, self._preprocess_contraction_map)
-        self._obviousness = Obviousness()
-        self._compatibility = Compatibility()
-        self._inappropriateness = Inappropriateness()
-        self._hmm_trained = HMMHelper(self.humour_corpus + self.non_humour_corpus)
-        self._ngram_trained = NgramHelper(self.humour_corpus)
+        complete_corpus = self.humour_corpus + self.non_humour_corpus
+        preprocessed_corpus, pos_tagged_corpus = preprocess_texts_in_chunks(complete_corpus, self._preprocess_contraction_map)
+        self.humour_corpus = preprocessed_corpus[:len(self.humour_corpus)]
+        self.non_humour_corpus = preprocessed_corpus[len(self.non_humour_corpus):]
+        self._pos_tagged_humorous_corpus = pos_tagged_corpus[:len(self.humour_corpus)]
+        self._pos_tagged_non_humorous_corpus = pos_tagged_corpus[len(self.non_humour_corpus):]
 
-        self._pos_tagged_humorous_corpus = pos_tag_texts(self.humour_corpus)
-        self._pos_tagged_non_humorous_corpus = pos_tag_texts(self.non_humour_corpus)
+        self._obviousness = Obviousness()
+
+        self._compatibility = Compatibility()
+
+        self._inappropriateness = Inappropriateness()
+        
+        self._hmm_trained = HMMHelper(self.humour_corpus + self.non_humour_corpus)
+
+        self._ngram_trained = NgramHelper(self.humour_corpus)
 
         self._humorous_adj_noun_matrix = POSTagBigramFrequencyMatrix(
             pos_tagged_corpus_list=self._pos_tagged_humorous_corpus,
@@ -69,12 +72,16 @@ class PyHumour:
 
         self._humorous_conflict_calculator = Conflict(
             frequency_matrix=self._humorous_adj_noun_matrix)
+
         self._non_humorous_conflict_calculator = Conflict(
             frequency_matrix=self._non_humorous_adj_noun_matrix)
+
         self._adjective_absurdity_calculator = AdjectiveAbsurdity(
             frequency_matrix=self._non_humorous_adj_noun_matrix)
+
         self._humorous_noun_absurdity_calculator = NounAbsurdity(
             frequency_matrix=self._humorous_adj_noun_matrix)
+
         self._non_humorous_noun_absurdity_calculator = NounAbsurdity(
             frequency_matrix=self._non_humorous_adj_noun_matrix)
 
