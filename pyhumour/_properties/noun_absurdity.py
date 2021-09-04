@@ -67,13 +67,24 @@ def get_embeddings_index():
         response = requests.get(url, stream=True)
         if response.status_code == 200:
             with open(download_path, 'wb') as f:
-                f.write(response.raw.read())
+                total_length = response.headers.get('content-length')
+                if total_length is None:
+                    f.write(response.raw.read())
+                else:
+                    cumulative_length = 0
+                    total_length = int(total_length)
+                    for data in response.iter_content(chunk_size=4096):
+                        cumulative_length += len(data)
+                        f.write(data)
+                        progress = int(50 * cumulative_length / total_length)
+                        sys.stdout.write("\r Downloading 'numberbatch-en-19.08.txt.gz': [%s%s]" % ('=' * progress, ' ' * (50 - progress)))
+                        sys.stdout.flush()
 
-        with gzip.open(download_path) as f_in:
-            with open(target_path, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
+            with gzip.open(download_path) as f_in:
+                with open(target_path, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
 
-        os.remove(download_path)  # removes the gz (zip) file
+            os.remove(download_path)  # removes the gz (zip) file
 
         f = open(target_path, encoding='utf-8')
 
