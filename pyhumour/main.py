@@ -4,10 +4,12 @@ from pyhumour._properties.compatibility import Compatibility
 from pyhumour._properties.conflict import Conflict
 from pyhumour._properties.inappropriateness import Inappropriateness
 from pyhumour._properties.language_models import HMMHelper, NgramHelper
-from pyhumour._properties.noun_absurdity import NounAbsurdity
+from pyhumour._properties.noun_absurdity import NounAbsurdity, async_get_embeddings_index
 from pyhumour._properties.obviousness import Obviousness
 from pyhumour._utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFrequencyMatrix
 from pyhumour._utilities.preprocess import preprocess_text, preprocess_texts_in_chunks, pos_tag_texts
+import asyncio
+from concurrent import futures
 import os
 import json
 import sys
@@ -41,23 +43,32 @@ class PyHumour:
         self._humorous_noun_absurdity_calculator = None
         self._non_humorous_noun_absurdity_calculator = None
 
-    def fit(self) -> None:
+        self._embeddings_index = None
+
+    async def _async_fit(self) -> None:
+        loop = asyncio.get_running_loop()
+        process_pool = futures.ProcessPoolExecutor()
+        thread_pool = futures.ThreadPoolExecutor()
+        embeddings_index = async_get_embeddings_index(loop, thread_pool)
         resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
+
         self._preprocess_contraction_map = json.load(open(os.path.join(resources_path, "contraction_map.json")))
         complete_corpus = self.humour_corpus + self.non_humour_corpus
-        preprocessed_corpus, pos_tagged_corpus = preprocess_texts_in_chunks(complete_corpus, self._preprocess_contraction_map)
+        preprocessed_corpus, pos_tagged_corpus = await preprocess_texts_in_chunks(loop,
+                                                                                  process_pool,
+                                                                                  complete_corpus,
+                                                                                  self._preprocess_contraction_map)
+        self._hmm_trained = HMMHelper(self.humour_corpus + self.non_humour_corpus)
+        hmm_trained = self._hmm_trained.async_train(loop, process_pool)
+
         self.humour_corpus = preprocessed_corpus[:len(self.humour_corpus)]
         self.non_humour_corpus = preprocessed_corpus[len(self.non_humour_corpus):]
         self._pos_tagged_humorous_corpus = pos_tagged_corpus[:len(self.humour_corpus)]
         self._pos_tagged_non_humorous_corpus = pos_tagged_corpus[len(self.non_humour_corpus):]
 
         self._obviousness = Obviousness()
-
         self._compatibility = Compatibility()
-
         self._inappropriateness = Inappropriateness()
-        
-        self._hmm_trained = HMMHelper(self.humour_corpus + self.non_humour_corpus)
 
         self._ngram_trained = NgramHelper(self.humour_corpus)
 
@@ -79,11 +90,20 @@ class PyHumour:
         self._adjective_absurdity_calculator = AdjectiveAbsurdity(
             frequency_matrix=self._non_humorous_adj_noun_matrix)
 
+        await embeddings_index
+        self._embeddings_index = embeddings_index.result()
         self._humorous_noun_absurdity_calculator = NounAbsurdity(
-            frequency_matrix=self._humorous_adj_noun_matrix)
-
+            frequency_matrix=self._humorous_adj_noun_matrix, embeddings_index=self._embeddings_index)
         self._non_humorous_noun_absurdity_calculator = NounAbsurdity(
-            frequency_matrix=self._non_humorous_adj_noun_matrix)
+            frequency_matrix=self._non_humorous_adj_noun_matrix, embeddings_index=self._embeddings_index)
+
+        await hmm_trained
+
+        thread_pool.shutdown()
+        process_pool.shutdown()
+
+    def fit(self) -> None:
+        asyncio.run(self._async_fit())
 
     def obviousness(self, text: str) -> float:
         return self._obviousness.calculate(text)

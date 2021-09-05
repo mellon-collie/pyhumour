@@ -7,7 +7,7 @@ import re
 from nltk.corpus import words, wordnet
 import numpy as np
 from nltk.tokenize import word_tokenize, sent_tokenize
-
+from concurrent import futures
 from pyhumour._utilities.preprocess import preprocess_text
 import math
 
@@ -25,6 +25,13 @@ class HMMHelper:
         self._hmm_trained -> trained hmm model
         """
         self._texts = texts
+
+    def async_train(self, loop, executor):
+        hmm_trained_future = loop.run_in_executor(executor, self.train)
+        return hmm_trained_future
+
+    def train(self):
+        print("training hmm")
         self._tokenizer = self.get_tokenizer(200000)
         self._hmm_trained = self.get_hmm()
 
@@ -87,7 +94,7 @@ class NgramHelper:
         self._bigram = dict()
         self._trigram = dict()
         self._special_characters = string.punctuation + \
-            "'[@_!#$%^&*()<>?/\|}{~:]'"
+                                   "'[@_!#$%^&*()<>?/\|}{~:]'"
 
     def get_special_characters(self):
         return self._special_characters
@@ -107,12 +114,12 @@ class NgramHelper:
         for i in range(len(self._individual_sentences)):
             word_list = self._individual_sentences[i]
             if len(word_list) >= 2:
-                for j in range(0, len(word_list)-1):
-                    if tuple([word_list[j], word_list[j+1]]) not in self._bigram:
-                        self._bigram[tuple([word_list[j], word_list[j+1]])] = 1
+                for j in range(0, len(word_list) - 1):
+                    if tuple([word_list[j], word_list[j + 1]]) not in self._bigram:
+                        self._bigram[tuple([word_list[j], word_list[j + 1]])] = 1
                     else:
                         self._bigram[tuple(
-                            [word_list[j], word_list[j+1]])] += 1
+                            [word_list[j], word_list[j + 1]])] += 1
         return self._bigram
 
     def get_trigrams(self):
@@ -121,13 +128,13 @@ class NgramHelper:
         for i in range(len(self._individual_sentences)):
             word_list = self._individual_sentences[i]
             if len(word_list) >= 3:
-                for j in range(0, len(word_list)-2):
-                    if (word_list[j], word_list[j+1], word_list[j+2]) not in self._trigram:
+                for j in range(0, len(word_list) - 2):
+                    if (word_list[j], word_list[j + 1], word_list[j + 2]) not in self._trigram:
                         self._trigram[(
-                            word_list[j], word_list[j+1], word_list[j+2])] = 1
+                            word_list[j], word_list[j + 1], word_list[j + 2])] = 1
                     else:
                         self._trigram[(
-                            word_list[j], word_list[j+1], word_list[j+2])] += 1
+                            word_list[j], word_list[j + 1], word_list[j + 2])] += 1
         return self._trigram
 
     def get_vocab(self):
@@ -193,7 +200,8 @@ class NgramHelper:
                     if word[-1] == "!":
                         modified_word_list.append("!")
                     word = word.replace("!", "")
-                if (word in self._special_characters) or (len(wordnet.synsets(word)) > 0) or (word in self._golden_vocab):
+                if (word in self._special_characters) or (len(wordnet.synsets(word)) > 0) or (
+                        word in self._golden_vocab):
                     modified_word_list.append(word)
                 elif ("." in word) or ("-" in word) or ("/" in word):
                     word = re.sub("[.\-\/]", " ", word)

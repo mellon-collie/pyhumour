@@ -5,6 +5,7 @@ from nltk import (
 )
 from concurrent import futures
 import itertools
+import asyncio
 
 
 def preprocess_text(text, contraction_map):
@@ -36,20 +37,15 @@ def preprocess_text(text, contraction_map):
     return text
 
 
-def preprocess_texts_in_chunks(text_list: list, contraction_map) -> tuple:
+async def preprocess_texts_in_chunks(loop, executor, text_list: list, contraction_map) -> tuple:
     number_worker_processes = len(text_list) // 50000 + 1
-    number_worker_processes = number_worker_processes if number_worker_processes < 4 else 4
     preprocess_texts_list = []
     if number_worker_processes > 1:
         futures_list = []
         text_chunks = [text_list[x: x + 50000] for x in range(0, len(text_list), 50000)]
-        with futures.ProcessPoolExecutor() as executor:
-            for chunk in text_chunks:
-                futures_list.append(executor.submit(preprocess_texts, chunk, contraction_map))
-        chunks_result = []
-        for future in futures_list:
-            result = future.result()
-            chunks_result.append(result)
+        for chunk in text_chunks:
+            futures_list.append(loop.run_in_executor(executor, preprocess_texts, chunk, contraction_map))
+        chunks_result = await asyncio.gather(*futures_list)
         preprocess_texts_list = list(itertools.chain(*chunks_result))
     else:
         preprocess_texts_list = preprocess_texts(text_list, contraction_map)
