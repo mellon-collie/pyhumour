@@ -1,16 +1,18 @@
 import re
-import json
 from nltk import (
     tokenize,
     pos_tag
 )
-import os
-import sys
+from concurrent import futures
+import itertools
+import asyncio
 
-def preprocess_text(text):
+
+def preprocess_text(text, contraction_map):
+    if not isinstance(text, str):
+        return text
+
     text = text.lower()
-    resources_path = os.path.join(os.path.dirname(sys.modules["pyhumour"].__file__), "resources")
-    contraction_map = json.load(open(os.path.join(resources_path, "contraction_map.json")))
     change_characters = {'‚': ',', '\ufeff': ' ', '„': '"', "—": '-', '™': ' ', '″': '"', 'ƒ': 'f', '�': ' ',
                          '′': "'", '‘': "'",
                          '…': '...', '’': "'", '‑': '-', '\u2028': ' ', 'π': 'π', 'Ł': ' ', '⚪': ' ', '–': '-',
@@ -35,11 +37,43 @@ def preprocess_text(text):
     return text
 
 
-def preprocess_texts(text_list: list) -> list:
+async def preprocess_texts_in_chunks(loop, executor, text_list: list, contraction_map) -> tuple:
+    number_worker_processes = len(text_list) // 50000 + 1
+    preprocess_texts_list = []
+    if number_worker_processes > 1:
+        futures_list = []
+        text_chunks = [text_list[x: x + 50000] for x in range(0, len(text_list), 50000)]
+        for chunk in text_chunks:
+            futures_list.append(loop.run_in_executor(executor, preprocess_texts, chunk, contraction_map))
+        chunks_result = await asyncio.gather(*futures_list)
+        preprocess_texts_list = list(itertools.chain(*chunks_result))
+    else:
+        preprocess_texts_list = preprocess_texts(text_list, contraction_map)
+
+    pure_preprocessed_texts = []
+    pos_tagged_texts = []
+
+    for index, item in enumerate(preprocess_texts_list):
+        pure_preprocessed_texts.append(item[0])
+        pos_tagged_texts.append(item[1])
+
+    return pure_preprocessed_texts, pos_tagged_texts
+
+
+def preprocess_texts(text_list: list, contraction_map) -> list:
     preprocess_texts_list = []
     for text in text_list:
-        preprocess_texts_list.append(preprocess_text(text))
-
+        preprocessed_text = ""
+        pos_tagged_text = []
+        try:
+            preprocessed_text = preprocess_text(text, contraction_map)
+        except Exception as e:
+            preprocessed_text = text
+        try:
+            pos_tagged_text = pos_tag(tokenize.word_tokenize(preprocessed_text))
+        except Exception as e:
+            pos_tagged_text = []
+        preprocess_texts_list.append((preprocessed_text, pos_tagged_text))
     return preprocess_texts_list
 
 
@@ -47,5 +81,4 @@ def pos_tag_texts(text_list: list) -> list:
     pos_tag_text_list = []
     for text in text_list:
         pos_tag_text_list.append(pos_tag(tokenize.word_tokenize(text)))
-
     return pos_tag_text_list

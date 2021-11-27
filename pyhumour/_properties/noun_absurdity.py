@@ -14,14 +14,14 @@ from pyhumour._utilities.pos_tag_bigram_frequency_matrix import POSTagBigramFreq
 class NounAbsurdity:
     """Calculates the 'Noun Absurdity' value of a given text."""
 
-    def __init__(self, frequency_matrix):
+    def __init__(self, frequency_matrix, embeddings_index):
         """
         Construct a :class:`NounAbsurdity` object.
 
         :param POSTagBigramFrequencyMatrix frequency_matrix: The adjective-noun frequency matrix
         """
         self.adj_noun_dict = frequency_matrix
-        self.embeddings_index = get_embeddings_index()
+        self.embeddings_index = embeddings_index
 
     def calculate(self, pos_tags: list) -> float:
         """Return the 'Humourous Noun Absurdity' value of a given text.
@@ -34,20 +34,24 @@ class NounAbsurdity:
         noun_absurdity_positive = 0
         noun_absurdity_count = 0
         number_of_pos_tags = len(pos_tags)
-        for j in range(number_of_pos_tags-1):
-            if pos_tags[j][1] in acceptable_types and pos_tags[j+1][1] in second_type:
+        for j in range(number_of_pos_tags - 1):
+            if pos_tags[j][1] in acceptable_types and pos_tags[j + 1][1] in second_type:
                 adj = re.sub('[^A-Za-z]*', '', pos_tags[j][0])
                 adj = adj.lower()
-                noun = re.sub('[^A-Za-z]*', '', pos_tags[j+1][0])
+                noun = re.sub('[^A-Za-z]*', '', pos_tags[j + 1][0])
                 noun = noun.lower()
                 for k in self.adj_noun_dict.get_row(adj):  # gets list of nouns
-                    noun_absurdity_positive += self.adj_noun_dict.cell_value(adj, k)*distance.cosine(
+                    noun_absurdity_positive += self.adj_noun_dict.cell_value(adj, k) * distance.cosine(
                         self.embeddings_index[noun], self.embeddings_index[k])
                     noun_absurdity_count += self.adj_noun_dict.cell_value(adj, k)
         if noun_absurdity_count > 0:
             noun_absurdity_average = noun_absurdity_positive / noun_absurdity_count
 
         return noun_absurdity_average
+
+
+def async_get_embeddings_index(loop, executor):
+    return loop.run_in_executor(executor, get_embeddings_index)
 
 
 def get_embeddings_index():
@@ -67,13 +71,25 @@ def get_embeddings_index():
         response = requests.get(url, stream=True)
         if response.status_code == 200:
             with open(download_path, 'wb') as f:
-                f.write(response.raw.read())
+                total_length = response.headers.get('content-length')
+                if total_length is None:
+                    f.write(response.raw.read())
+                else:
+                    cumulative_length = 0
+                    total_length = int(total_length)
+                    for data in response.iter_content(chunk_size=4096):
+                        cumulative_length += len(data)
+                        f.write(data)
+                        progress = int(50 * cumulative_length / total_length)
+                        sys.stdout.write("\r Downloading 'numberbatch-en-19.08.txt.gz': [%s%s]" % (
+                            '=' * progress, ' ' * (50 - progress)))
+                        sys.stdout.flush()
 
-        with gzip.open(download_path) as f_in:
-            with open(target_path, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
+            with gzip.open(download_path) as f_in:
+                with open(target_path, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
 
-        os.remove(download_path)  # removes the gz (zip) file
+            os.remove(download_path)  # removes the gz (zip) file
 
         f = open(target_path, encoding='utf-8')
 
